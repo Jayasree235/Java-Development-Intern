@@ -1,0 +1,145 @@
+import java.util.Scanner;
+
+class Student {
+    private int rollNumber;
+    private String name;
+    private double feesPaid;
+    private double totalFees;
+
+    public Student(int rollNumber, String name, double totalFees) {
+        this.rollNumber = rollNumber;
+        this.name = name;
+        this.totalFees = totalFees;
+        this.feesPaid = 0;
+    }
+
+    public void payFees(double amount) {
+        feesPaid += amount;
+    }
+
+    public double getRemainingFees() {
+        return totalFees - feesPaid;
+    }
+
+    public int getRollNumber() {
+        return rollNumber;
+    }
+
+    public void showInfo() {
+        System.out.println("Roll Number: " + rollNumber);
+        System.out.println("Name: " + name);
+        System.out.println("Total Fees: " + totalFees);
+        System.out.println("Fees Paid: " + feesPaid);
+        System.out.println("Remaining Fees: " + getRemainingFees());
+    }
+}
+
+public class FeesManagementSystem {
+    private static final int MAX_STUDENTS = 100;
+    private Student[] students;
+    private int studentCount;
+
+    public FeesManagementSystem() {
+        students = new Student[MAX_STUDENTS];
+        studentCount = 0;
+    }
+
+    public void addStudent(Student student) {
+        if (studentCount < MAX_STUDENTS) {
+            students[studentCount] = student;
+            studentCount++;
+            System.out.println("Student added successfully.");
+        } else {
+            System.out.println("Maximum number of students reached.");
+        }
+    }
+
+    public Student findStudent(int rollNumber) {
+        for (int i = 0; i < studentCount; i++) {
+            if (students[i].getRollNumber() == rollNumber) {
+                return students[i];
+            }
+        }
+        return null;
+    }
+
+    public void payFees(int rollNumber, double amount) {
+        Student student = findStudent(rollNumber);
+        if (student != null) {
+            double remainingFees = student.getRemainingFees();
+            if (amount <= remainingFees) {
+                student.payFees(amount);
+                System.out.println("Fees paid successfully.");
+                System.out.println("Remaining Fees: " + student.getRemainingFees());
+            } else {
+                System.out.println("Amount exceeds remaining fees. Payment not processed.");
+            }
+        } else {
+            System.out.println("Student not found.");
+        }
+    }
+
+    public void generateReport() {
+        System.out.println("\nStudent Report:");
+        for (int i = 0; i < studentCount; i++) {
+            System.out.println("\nStudent " + (i + 1));
+            students[i].showInfo();
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        FeesManagementSystem system = new FeesManagementSystem();
+
+        while (true) {
+            System.out.println("\n1. Add Student");
+            System.out.println("2. Pay Fees");
+            System.out.println("3. Show Student Info");
+            System.out.println("4. Generate Report");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Roll Number: ");
+                    int rollNumber = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    System.out.print("Enter Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter Total Fees: ");
+                    double totalFees = scanner.nextDouble();
+                    Student newStudent = new Student(rollNumber, name, totalFees);
+                    system.addStudent(newStudent);
+                    break;
+                case 2:
+                    System.out.print("Enter Roll Number: ");
+                    int rollNumberToPay = scanner.nextInt();
+                    System.out.print("Enter Amount to Pay: ");
+                    double amountToPay = scanner.nextDouble();
+                    system.payFees(rollNumberToPay, amountToPay);
+                    break;
+                case 3:
+                    System.out.print("Enter Roll Number: ");
+                    int searchRollNumber = scanner.nextInt();
+                    Student foundStudent = system.findStudent(searchRollNumber);
+                    if (foundStudent != null) {
+                        foundStudent.showInfo();
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+                case 4:
+                    system.generateReport();
+                    break;
+                case 5:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
